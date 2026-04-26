@@ -2,6 +2,22 @@ return {
   { 'NMAC427/guess-indent.nvim', opts = {} },
   {
     'lewis6991/gitsigns.nvim',
+    keys = {
+      {
+        '<leader>gt',
+        function()
+          local gitsigns = require 'gitsigns'
+
+          if vim.b.gitsigns_head ~= nil then
+            gitsigns.detach()
+            return
+          end
+
+          gitsigns.attach()
+        end,
+        desc = '[G]it [T]oggle changes',
+      },
+    },
     opts = {
       signs = {
         add = { text = '+' },

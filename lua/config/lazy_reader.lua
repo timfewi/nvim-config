@@ -35,6 +35,35 @@ local function get_visual_selection()
   return text
 end
 
+local function copy_selection_for_lazy_reader(text)
+  local copied = false
+  local errors = {}
+
+  for _, register in ipairs({ '*', '+' }) do
+    local ok, err = pcall(vim.fn.setreg, register, text)
+    if ok then
+      copied = true
+    elseif err then
+      table.insert(errors, tostring(err))
+    end
+  end
+
+  if copied then return true end
+
+  if #errors > 0 then return nil, table.concat(errors, '\n') end
+
+  return nil, 'Unable to copy the selection for Lazy Reader.'
+end
+
+local function launch_lazy_reader(mode)
+  local job = vim.fn.jobstart({ 'lazy-reader', mode }, { detach = true })
+  if job > 0 then return true end
+
+  if job == -1 then return nil, 'Failed to start lazy-reader.' end
+
+  return nil, 'Invalid lazy-reader launch configuration.'
+end
+
 function M.run(mode)
   if vim.fn.executable 'lazy-reader' ~= 1 then
     notify('lazy-reader is not available in PATH.', vim.log.levels.ERROR)
@@ -47,14 +76,18 @@ function M.run(mode)
     return
   end
 
-  vim.system({ 'lazy-reader', '--stdin', mode }, { stdin = text, text = true }, function(result)
-    if result.code == 0 then return end
+  local copied, copy_err = copy_selection_for_lazy_reader(text)
+  if not copied then
+    notify(copy_err, vim.log.levels.ERROR)
+    return
+  end
 
-    local stderr = vim.trim(result.stderr or '')
-    local message = stderr ~= '' and stderr or ('lazy-reader exited with code ' .. result.code)
+  vim.defer_fn(function()
+    local started, start_err = launch_lazy_reader(mode)
+    if started then return end
 
-    vim.schedule(function() notify(message, vim.log.levels.ERROR) end)
-  end)
+    notify(start_err, vim.log.levels.ERROR)
+  end, 10)
 end
 
 function M.setup()
