@@ -19,6 +19,7 @@ return {
       delay = 0,
       icons = { mappings = vim.g.have_nerd_font },
       spec = {
+        { '<leader>b', group = '[B]uffers' },
         { '<leader>g', group = '[G]it' },
         { '<leader>s', group = '[S]earch', mode = { 'n', 'v' } },
         { '<leader>t', group = '[T]oggle' },

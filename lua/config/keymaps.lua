@@ -2,6 +2,13 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
+vim.keymap.set('n', '-', function()
+  local dir = vim.fn.expand '%:p:h'
+  if dir == '' then dir = vim.fn.getcwd() end
+  vim.cmd('edit ' .. vim.fn.fnameescape(dir))
+end, { desc = 'Open parent directory' })
+vim.keymap.set('n', '<leader>bb', '<cmd>buffer #<CR>', { desc = 'Switch to previous [B]uffer' })
+
 vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
