@@ -1,0 +1,15 @@
+# Secret-prone local artifacts
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.der
+*.kdbx
+*.sqlite
+*.db
+secrets/
+credentials/
