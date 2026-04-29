@@ -4,6 +4,7 @@ vim.g.have_nerd_font = true
 
 require 'config.options'
 require 'config.keymaps'
+require('config.fast_edit_sidebar').setup()
 require 'config.autocmds'
 require 'config.lazy'
 require('config.theme').apply()

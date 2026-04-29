@@ -51,18 +51,18 @@ return {
         },
       },
     },
-    opts = function()
+    config = function(_, _)
       ensure_openrouter_api_key()
 
-      return {
+      require('avante').setup {
         provider = 'openrouter',
-        auto_suggestions_provider = 'openrouter',
         selector = {
           provider = 'telescope',
           provider_opts = {},
         },
         behaviour = {
-          auto_suggestions = true,
+          auto_suggestions = false,
+          enable_token_counting = false,
           auto_approve_tool_permissions = false,
         },
         providers = {
@@ -77,8 +77,12 @@ return {
               max_tokens = 4096,
             },
           },
-        },
+        }
       }
+
+      vim.keymap.set('n', '<leader>aC', function()
+        require('avante').toggle.selection()
+      end, { desc = 'Avante: toggle selection' })
     end,
   },
 }
