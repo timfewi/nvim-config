@@ -1,6 +1,26 @@
 local M = {}
+local util = require 'lspconfig.util'
 
 local function has_lsp_config(name) return #vim.api.nvim_get_runtime_file('lsp/' .. name .. '.lua', false) > 0 end
+local function angular_root(fname) return util.root_pattern('angular.json', 'nx.json')(fname) end
+
+local function powershell_bundle_path()
+  local executable = vim.fn.exepath 'powershell-editor-services'
+  if executable == '' then return nil end
+
+  local bundle_path = vim.fs.normalize((executable:gsub('/bin/powershell%-editor%-services$', '/lib/powershell-editor-services')))
+  if bundle_path == executable or not vim.uv.fs_stat(bundle_path .. '/PowerShellEditorServices/Start-EditorServices.ps1') then
+    return nil
+  end
+
+  return bundle_path
+end
+
+local function typescript_root(fname)
+  if angular_root(fname) then return nil end
+
+  return util.root_pattern('tsconfig.json', 'jsconfig.json', 'package.json', '.git')(fname)
+end
 
 function M.setup()
   vim.api.nvim_create_autocmd('LspAttach', {
@@ -46,12 +66,17 @@ function M.setup()
   })
 
   local ts_server = has_lsp_config 'ts_ls' and 'ts_ls' or 'tsserver'
+  local powershell_bundle = powershell_bundle_path()
 
   local servers = {
     bashls = {},
     cssls = {},
     docker_compose_language_service = {},
     dockerls = {},
+    angularls = {
+      root_dir = angular_root,
+      single_file_support = false,
+    },
     html = {},
     jsonls = {},
     lemminx = {},
@@ -86,6 +111,34 @@ function M.setup()
     },
     marksman = {},
     nil_ls = {},
+    omnisharp = {
+      settings = {
+        FormattingOptions = {
+          EnableEditorConfigSupport = true,
+          OrganizeImports = true,
+        },
+        MsBuild = {
+          LoadProjectsOnDemand = false,
+        },
+        RoslynExtensionsOptions = {
+          EnableAnalyzersSupport = true,
+          EnableImportCompletion = true,
+          AnalyzeOpenDocumentsOnly = false,
+          EnableDecompilationSupport = true,
+        },
+        RenameOptions = {
+          RenameInComments = true,
+          RenameOverloads = true,
+          RenameInStrings = true,
+        },
+        Sdk = {
+          IncludePrereleases = true,
+        },
+      },
+    },
+    powershell_es = powershell_bundle and {
+      bundle_path = powershell_bundle,
+    } or nil,
     pyright = {
       settings = {
         pyright = {
@@ -121,7 +174,53 @@ function M.setup()
     [ts_server] = {
       init_options = {
         hostInfo = 'neovim',
+        preferences = {
+          includeCompletionsForImportStatements = true,
+          includeCompletionsForModuleExports = true,
+          includeCompletionsWithInsertText = true,
+          includeCompletionsWithSnippetText = true,
+        },
       },
+      root_dir = typescript_root,
+      settings = {
+        javascript = {
+          suggest = {
+            completeFunctionCalls = true,
+          },
+          updateImportsOnFileMove = {
+            enabled = 'always',
+          },
+          inlayHints = {
+            includeInlayEnumMemberValueHints = true,
+            includeInlayFunctionLikeReturnTypeHints = true,
+            includeInlayFunctionParameterTypeHints = true,
+            includeInlayParameterNameHints = 'all',
+            includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+            includeInlayPropertyDeclarationTypeHints = true,
+            includeInlayVariableTypeHints = true,
+            includeInlayVariableTypeHintsWhenTypeMatchesName = true,
+          },
+        },
+        typescript = {
+          suggest = {
+            completeFunctionCalls = true,
+          },
+          updateImportsOnFileMove = {
+            enabled = 'always',
+          },
+          inlayHints = {
+            includeInlayEnumMemberValueHints = true,
+            includeInlayFunctionLikeReturnTypeHints = true,
+            includeInlayFunctionParameterTypeHints = true,
+            includeInlayParameterNameHints = 'all',
+            includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+            includeInlayPropertyDeclarationTypeHints = true,
+            includeInlayVariableTypeHints = true,
+            includeInlayVariableTypeHintsWhenTypeMatchesName = true,
+          },
+        },
+      },
+      single_file_support = false,
     },
     yamlls = {},
   }

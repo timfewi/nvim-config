@@ -136,6 +136,50 @@ local function configure_javascript(dap)
   dap.configurations.typescriptreact = configurations
 end
 
+local function configure_dotnet(dap)
+  local netcoredbg = executable 'netcoredbg'
+  if not netcoredbg then
+    vim.notify_once('netcoredbg is not available in PATH.', vim.log.levels.WARN)
+    return
+  end
+
+  dap.adapters.coreclr = {
+    type = 'executable',
+    command = netcoredbg,
+    args = { '--interpreter=vscode' },
+  }
+
+  dap.configurations.cs = {
+    {
+      type = 'coreclr',
+      name = 'Launch .NET project',
+      request = 'launch',
+      cwd = '${workspaceFolder}',
+      stopAtEntry = false,
+      program = function()
+        local default_path = vim.fn.getcwd() .. '/bin/Debug/'
+        local dll_path = vim.fn.input('Path to dll: ', default_path, 'file')
+
+        if dll_path == '' then return nil end
+
+        return vim.fn.fnamemodify(dll_path, ':p')
+      end,
+    },
+    {
+      type = 'coreclr',
+      name = 'Attach to .NET process',
+      request = 'attach',
+      processId = require('dap.utils').pick_process,
+    },
+  }
+
+  pcall(function()
+    require('dap.ext.vscode').load_launchjs(nil, {
+      coreclr = { 'cs' },
+    })
+  end)
+end
+
 local function configure_c_family(dap)
   local codelldb = vim.env.NVIM_DAP_LLDB_PATH
   local liblldb = vim.env.NVIM_DAP_LLDB_LIB_PATH
@@ -254,6 +298,7 @@ function M.setup()
   configure_ui(dap, dapui)
   configure_python(dap)
   configure_javascript(dap)
+  configure_dotnet(dap)
   configure_c_family(dap)
 
   vim.api.nvim_create_user_command('DebugBash', function() M.debug_shell_script() end, {
