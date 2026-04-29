@@ -1,124 +1,73 @@
-# Neovim keymap guide
+# nvim-config
 
-`<leader>` is set to **Space** in this config.
+Portable Neovim configuration for NixOS, macOS, Windows, WSL2, and generic Linux.
 
-This file documents the current feature-oriented `<leader>` mappings configured in `nvim/`. Some mappings are always available, while others only appear in specific modes or when a plugin/LSP client is active.
+`~/.config/nvim` is the writable source of truth. Nix installs Neovim and editor tooling when available, `lazy.nvim` installs plugins, and Mason is enabled only on non-NixOS machines as an LSP/tool fallback.
 
-## Always-available mappings
+## Repository layout
 
-| Keys | Mode | Feature | Action |
-| --- | --- | --- | --- |
-| `<leader><leader>` | Normal | Search | Find existing buffers |
-| `<leader>/` | Normal | Search | Fuzzy search in current buffer |
-| `<leader>bb` | Normal | Buffers | Switch to previous buffer |
-| `<leader>f` | Normal/Visual | Format | Format buffer/selection |
-| `<leader>q` | Normal | Diagnostics | Open diagnostic location list |
+```text
+.
+├── init.lua
+├── lua/
+├── lazy-lock.json
+├── bootstrap-nvim.sh
+├── bootstrap-nvim.ps1
+└── README.md
+```
 
-## Search (`<leader>s`)
+## Install paths
 
-| Keys | Mode | Action |
-| --- | --- | --- |
-| `<leader>sc` | Normal | Search commands |
-| `<leader>sd` | Normal | Search diagnostics |
-| `<leader>sf` | Normal | Search files |
-| `<leader>sg` | Normal | Live grep |
-| `<leader>sh` | Normal | Search help tags |
-| `<leader>sk` | Normal | Search keymaps |
-| `<leader>sn` | Normal | Search Neovim config files |
-| `<leader>sr` | Normal | Resume last Telescope picker |
-| `<leader>ss` | Normal | Search Telescope pickers |
-| `<leader>sw` | Normal/Visual | Search current word / selection |
-| `<leader>s/` | Normal | Live grep in open files |
-| `<leader>s.` | Normal | Recent files |
+### NixOS and nix-darwin
 
-## Git (`<leader>g`)
+This repo is cloned into `~/.config/nvim` by `modules/home/editor.nix` from the companion `timfewi/nixos-config` repository. Update the Neovim config with:
 
-| Keys | Mode | Action |
-| --- | --- | --- |
-| `<leader>gb` | Normal | Toggle Diffview file sidebar |
-| `<leader>gd` | Normal | Open Diffview |
-| `<leader>gD` | Normal | Close Diffview |
-| `<leader>ge` | Normal | Focus Diffview files panel |
-| `<leader>gf` | Normal | Open LazyGit for current file |
-| `<leader>gg` | Normal | Open LazyGit |
-| `<leader>gh` | Normal | File history for current file |
-| `<leader>gH` | Normal | Repository history |
-| `<leader>gm` | Normal | Open merge/conflict view |
-| `<leader>gt` | Normal | Toggle gitsigns change tracking |
-| `<leader>gu` | Normal | Inline diff preview in current buffer |
+```bash
+cd ~/.config/nvim
+git pull
+```
 
-## Git hunk (`<leader>h`)
+Update Neovim binaries, LSPs, formatters, and debuggers by editing `modules/home/editor.nix` in `nixos-config` and rebuilding.
 
-These are buffer-local and only exist when `gitsigns` is attached.
+### Generic Linux and macOS without Nix
 
-| Keys | Mode | Action |
-| --- | --- | --- |
-| `<leader>hd` | Normal | Diff current file |
-| `<leader>hi` | Normal | Inline hunk preview |
-| `<leader>hp` | Normal | Preview hunk |
+```bash
+curl -fsSL https://raw.githubusercontent.com/timfewi/nvim-config/main/bootstrap-nvim.sh | bash
+```
 
-## Toggle (`<leader>t`)
+The bootstrap script installs Neovim plus core CLI dependencies, clones this repo into `~/.config/nvim`, syncs plugins with `lazy.nvim`, and installs Mason-managed language servers and formatters.
 
-| Keys | Mode | Action |
-| --- | --- | --- |
-| `<leader>th` | Normal | Toggle LSP inlay hints for attached buffer |
-| `<leader>tw` | Normal | Toggle git word diff |
+### Native Windows
 
-## Debug (`<leader>d`)
+```powershell
+irm https://raw.githubusercontent.com/timfewi/nvim-config/main/bootstrap-nvim.ps1 | iex
+```
 
-These come from the local debug plugin setup.
+The PowerShell bootstrap script installs Scoop if needed, installs Neovim and supporting tools, clones this repo into `%LOCALAPPDATA%\nvim`, then runs `:Lazy! sync` and `:MasonInstall`.
 
-| Keys | Mode | Action |
-| --- | --- | --- |
-| `<leader>db` | Normal | Toggle breakpoint |
-| `<leader>dB` | Normal | Set conditional breakpoint |
-| `<leader>dc` | Normal | Continue |
-| `<leader>di` | Normal | Step into |
-| `<leader>dl` | Normal | Run last |
-| `<leader>do` | Normal | Step over |
-| `<leader>dO` | Normal | Step out |
-| `<leader>dr` | Normal | Open REPL |
-| `<leader>dt` | Normal | Terminate |
-| `<leader>du` | Normal | Toggle debug UI |
-| `<leader>dx` | Normal | Debug shell script |
+### WSL2
 
-## Lazy Reader (`<leader>r`)
+If the distro is NixOS-WSL, use the same `nixos-config` flow as NixOS. Other WSL distributions can use the generic Linux bootstrap script.
 
-These are **visual mode only** and act on the current selection.
+## Tooling model
 
-| Keys | Mode | Action |
-| --- | --- | --- |
-| `<leader>re` | Visual | Explain selection |
-| `<leader>rn` | Visual | Narrate selection |
-| `<leader>rp` | Visual | Solve selection |
-| `<leader>rr` | Visual | Read selection |
-| `<leader>rs` | Visual | Summarize selection |
-| `<leader>rt` | Visual | Teach selection |
+- **NixOS / nix-darwin:** binaries and tooling come from Nix; Mason is disabled.
+- **Non-Nix macOS / Linux / Windows:** binaries come from the bootstrap script and Mason provides LSP/tool fallback.
+- **Plugins:** `lazy.nvim`
+- **Lockfile:** `lazy-lock.json` stays writable because this repo lives outside the Nix store.
 
-## Avante (`<leader>a`)
+## Validation
 
-Avante is configured with its default keymaps enabled, so these mappings come from the plugin rather than local overrides.
+Run a portable health check with:
 
-| Keys | Mode | Action |
-| --- | --- | --- |
-| `<leader>aa` | Normal | Show Avante sidebar |
-| `<leader>at` | Normal | Toggle Avante sidebar |
-| `<leader>ar` | Normal | Refresh sidebar |
-| `<leader>af` | Normal | Switch sidebar focus |
-| `<leader>a?` | Normal | Select model |
-| `<leader>an` | Normal | New ask |
-| `<leader>ae` | Normal | Edit selected blocks |
-| `<leader>aS` | Normal | Stop current request |
-| `<leader>ah` | Normal | Select chat history |
-| `<leader>ad` | Normal | Toggle debug mode |
-| `<leader>as` | Normal | Toggle suggestions |
-| `<leader>aR` | Normal | Toggle repomap |
-| `<leader>ac` | Normal | Add current buffer to selected files |
-| `<leader>aB` | Normal | Add all open buffers to selected files |
+```bash
+nvim --headless '+checkhealth' +qa
+```
+
+On NixOS, `:Mason` should be unavailable. On non-Nix systems, `:Mason` should open normally.
 
 ## Notes
 
-- `which-key` groups currently advertised are: `<leader>a`, `<leader>b`, `<leader>d`, `<leader>g`, `<leader>h`, `<leader>s`, and `<leader>t`.
-- `<leader>th` only exists when the attached LSP supports inlay hints.
-- `<leader>hd`, `<leader>hi`, and `<leader>hp` only exist in buffers where `gitsigns` is attached.
-- Avante mappings depend on `avante.nvim` loading successfully and keeping its default automatic keymaps enabled.
+- Rust/C/C++ debugging uses `NVIM_DAP_LLDB_PATH` and `NVIM_DAP_LLDB_LIB_PATH` when available.
+- Shell-script debugging uses `bashdb` when it is present in `PATH`.
+- Search features expect `ripgrep`, `fd`, and `fzf`.

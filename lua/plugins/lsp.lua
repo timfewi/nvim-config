@@ -1,3 +1,7 @@
+local function mason_enabled()
+  return vim.fn.filereadable '/etc/NIXOS' == 0
+end
+
 return {
   {
     'neovim/nvim-lspconfig',
@@ -5,6 +9,36 @@ return {
       { 'j-hui/fidget.nvim', opts = {} },
     },
     config = function() require('config.lsp').setup() end,
+  },
+  {
+    'williamboman/mason.nvim',
+    cond = mason_enabled,
+    opts = {
+      ensure_installed = {
+        'rust-analyzer',
+        'lua-language-server',
+        'typescript-language-server',
+        'pyright',
+        'bash-language-server',
+        'yaml-language-server',
+        'dockerfile-language-server',
+        'marksman',
+        'taplo',
+        'stylua',
+        'prettier',
+        'shfmt',
+        'ruff',
+      },
+    },
+  },
+  {
+    'williamboman/mason-lspconfig.nvim',
+    cond = mason_enabled,
+    dependencies = {
+      'williamboman/mason.nvim',
+      'neovim/nvim-lspconfig',
+    },
+    opts = {},
   },
   {
     'stevearc/conform.nvim',
