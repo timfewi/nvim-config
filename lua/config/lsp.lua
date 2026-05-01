@@ -3,6 +3,7 @@ local util = require 'lspconfig.util'
 
 local function has_lsp_config(name) return #vim.api.nvim_get_runtime_file('lsp/' .. name .. '.lua', false) > 0 end
 local function angular_root(fname) return util.root_pattern('angular.json', 'nx.json')(fname) end
+local function mason_enabled() return vim.fn.filereadable '/etc/NIXOS' == 0 end
 
 local function powershell_bundle_path()
   local executable = vim.fn.exepath 'powershell-editor-services'
@@ -20,6 +21,28 @@ local function typescript_root(fname)
   if angular_root(fname) then return nil end
 
   return util.root_pattern('tsconfig.json', 'jsconfig.json', 'package.json', '.git')(fname)
+end
+
+local function has_any_executable(candidates)
+  for _, executable in ipairs(candidates) do
+    if vim.fn.executable(executable) == 1 then return true end
+  end
+
+  return false
+end
+
+local function notify_missing_server(name, candidates)
+  local install_hint = mason_enabled()
+      and 'Install it with Mason or put it on PATH.'
+    or 'Install it via nixos-config; Mason is disabled on NixOS.'
+
+  vim.schedule(function()
+    vim.notify_once(
+      string.format("Skipping %s: missing executable `%s`. %s", name, table.concat(candidates, '` or `'), install_hint),
+      vim.log.levels.ERROR,
+      { title = 'nvim-config LSP' }
+    )
+  end)
 end
 
 function M.setup()
@@ -67,6 +90,15 @@ function M.setup()
 
   local ts_server = has_lsp_config 'ts_ls' and 'ts_ls' or 'tsserver'
   local powershell_bundle = powershell_bundle_path()
+  local required_binaries = {
+    bashls = { 'bash-language-server' },
+    nil_ls = { 'nil' },
+    pyright = { 'pyright-langserver', 'pyright' },
+    rust_analyzer = { 'rust-analyzer' },
+    sqls = { 'sqls' },
+    [ts_server] = { 'typescript-language-server' },
+    jsonls = { 'vscode-json-language-server' },
+  }
 
   local servers = {
     bashls = {},
@@ -172,6 +204,12 @@ function M.setup()
     sqls = {},
     taplo = {},
     [ts_server] = {
+      filetypes = {
+        'javascript',
+        'javascriptreact',
+        'typescript',
+        'typescriptreact',
+      },
       init_options = {
         hostInfo = 'neovim',
         preferences = {
@@ -227,8 +265,13 @@ function M.setup()
 
   for name, server in pairs(servers) do
     if has_lsp_config(name) then
-      vim.lsp.config(name, server)
-      vim.lsp.enable(name)
+      local candidates = required_binaries[name]
+      if candidates and not has_any_executable(candidates) then
+        notify_missing_server(name, candidates)
+      else
+        vim.lsp.config(name, server)
+        vim.lsp.enable(name)
+      end
     end
   end
 end

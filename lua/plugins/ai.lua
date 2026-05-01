@@ -34,6 +34,28 @@ end
 
 return {
   {
+    'zbirenbaum/copilot.lua',
+    cmd = 'Copilot',
+    event = 'InsertEnter',
+    opts = {
+      panel = {
+        enabled = false,
+      },
+      suggestion = {
+        enabled = true,
+        auto_trigger = true,
+        hide_during_completion = false,
+        keymap = {
+          accept = '<M-l>',
+          accept_word = '<M-w>',
+          next = '<M-]>',
+          prev = '<M-[>',
+          dismiss = '<C-]>',
+        },
+      },
+    },
+  },
+  {
     'yetone/avante.nvim',
     event = 'VeryLazy',
     version = false,

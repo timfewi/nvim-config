@@ -59,5 +59,5 @@ Install-ScoopIfMissing
 Install-Packages
 Clone-Config
 Invoke-NvimBootstrap -Description "Syncing plugins via lazy.nvim" -Command "+Lazy! sync"
-Invoke-NvimBootstrap -Description "Installing LSPs via Mason" -Command "+MasonInstall rust-analyzer lua-language-server typescript-language-server pyright bash-language-server yaml-language-server marksman taplo stylua prettier"
+Invoke-NvimBootstrap -Description "Installing LSPs via Mason" -Command "+MasonInstall rust-analyzer lua-language-server typescript-language-server json-lsp nil pyright bash-language-server sqls yaml-language-server marksman taplo stylua prettier"
 Write-Step "Done."

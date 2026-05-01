@@ -23,9 +23,21 @@ vim.schedule(function() vim.o.clipboard = 'unnamedplus' end)
 vim.diagnostic.config {
   update_in_insert = false,
   severity_sort = true,
-  float = { border = 'rounded', source = 'if_many' },
+  float = { border = 'rounded', scope = 'line', source = 'if_many' },
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = 'E',
+      [vim.diagnostic.severity.WARN] = 'W',
+      [vim.diagnostic.severity.INFO] = 'I',
+      [vim.diagnostic.severity.HINT] = 'H',
+    },
+  },
   underline = { severity = { min = vim.diagnostic.severity.WARN } },
-  virtual_text = true,
+  virtual_text = {
+    prefix = '●',
+    source = 'if_many',
+    spacing = 2,
+  },
   virtual_lines = false,
   jump = { float = true },
 }

@@ -53,7 +53,10 @@ local generated_sections = {
     items = {
       { mode = 'n', lhs = '-', desc = 'Open parent directory' },
       { mode = 'n', lhs = '<leader>bb', desc = 'Switch to previous buffer' },
-      { mode = 'n', lhs = '<leader>q', desc = 'Open diagnostic quickfix list' },
+      { mode = 'n', lhs = '<leader>e', desc = 'Open line diagnostics' },
+      { mode = 'n', lhs = '<leader>q', desc = 'Open diagnostic location list' },
+      { mode = 'n', lhs = '[d', desc = 'Previous diagnostic' },
+      { mode = 'n', lhs = ']d', desc = 'Next diagnostic' },
       { mode = 'n', lhs = '<C-h>', desc = 'Move focus to the left window' },
       { mode = 'n', lhs = '<C-j>', desc = 'Move focus to the lower window' },
       { mode = 'n', lhs = '<C-k>', desc = 'Move focus to the upper window' },

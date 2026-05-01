@@ -56,6 +56,10 @@ If the distro is NixOS-WSL, use the same `nixos-config` flow as NixOS. Other WSL
 - **Plugins:** `lazy.nvim`
 - **Lockfile:** `lazy-lock.json` stays writable because this repo lives outside the Nix store.
 
+If a configured LSP reports a missing executable on NixOS, add that server in `nixos-config`; this repo intentionally does not fall back to Mason there.
+
+The TypeScript LSP also covers React buffers (`javascriptreact` / `typescriptreact`), so React support comes from the same TypeScript server installation.
+
 ## Validation
 
 Run a portable health check with:

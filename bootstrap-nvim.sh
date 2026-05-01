@@ -77,7 +77,7 @@ sync_lazy() {
 
 install_mason_packages() {
   log "Installing LSPs via Mason"
-  if ! nvim --headless '+MasonInstall rust-analyzer lua-language-server typescript-language-server pyright bash-language-server yaml-language-server marksman taplo stylua prettier shfmt ruff' +qa; then
+  if ! nvim --headless '+MasonInstall rust-analyzer lua-language-server typescript-language-server json-lsp nil pyright bash-language-server sqls yaml-language-server marksman taplo stylua prettier shfmt ruff' +qa; then
     warn 'Mason installation failed; open Neovim and run :MasonInstall manually.'
   fi
 }
