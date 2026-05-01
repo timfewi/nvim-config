@@ -43,28 +43,28 @@ install_packages() {
 
   if command -v apt-get >/dev/null 2>&1; then
     sudo apt-get update
-    sudo apt-get install -y neovim git ripgrep fd-find fzf gcc make unzip curl xclip
+    sudo apt-get install -y neovim git ripgrep fd-find fzf gcc make unzip curl python3 xclip
     ensure_fd_alias
     return
   fi
 
   if command -v pacman >/dev/null 2>&1; then
-    sudo pacman -Sy --needed --noconfirm neovim git ripgrep fd fzf gcc make unzip curl xclip
+    sudo pacman -Sy --needed --noconfirm neovim git ripgrep fd fzf gcc make unzip curl python xclip
     return
   fi
 
   if command -v dnf >/dev/null 2>&1; then
-    sudo dnf install -y neovim git ripgrep fd-find fzf gcc make unzip curl xclip
+    sudo dnf install -y neovim git ripgrep fd-find fzf gcc make unzip curl python3 xclip
     ensure_fd_alias
     return
   fi
 
   if command -v brew >/dev/null 2>&1; then
-    brew install neovim git ripgrep fd fzf gcc make
+    brew install neovim git ripgrep fd fzf gcc make python
     return
   fi
 
-  printf '%s\n' 'Unsupported package manager. Install neovim, git, ripgrep, fd, fzf, gcc, make, unzip, and curl manually.' >&2
+  printf '%s\n' 'Unsupported package manager. Install neovim, git, ripgrep, fd, fzf, gcc, make, unzip, curl, and Python manually.' >&2
   exit 1
 }
 
@@ -76,8 +76,8 @@ sync_lazy() {
 }
 
 install_mason_packages() {
-  log "Installing LSPs via Mason"
-  if ! nvim --headless '+MasonInstall rust-analyzer lua-language-server typescript-language-server json-lsp nil pyright bash-language-server sqls yaml-language-server marksman taplo stylua prettier shfmt ruff' +qa; then
+  log "Installing Neovim tooling via Mason"
+  if ! nvim --headless '+MasonInstall rust-analyzer lua-language-server typescript-language-server json-lsp nil pyright debugpy bash-language-server sqls yaml-language-server marksman taplo stylua prettier shfmt ruff' +qa; then
     warn 'Mason installation failed; open Neovim and run :MasonInstall manually.'
   fi
 }

@@ -35,7 +35,7 @@ Update Neovim binaries, LSPs, formatters, and debuggers by editing `modules/home
 curl -fsSL https://raw.githubusercontent.com/timfewi/nvim-config/main/bootstrap-nvim.sh | bash
 ```
 
-The bootstrap script installs Neovim plus core CLI dependencies, clones this repo into `~/.config/nvim`, syncs plugins with `lazy.nvim`, and installs Mason-managed language servers and formatters.
+The bootstrap script installs Neovim plus core CLI dependencies, including Python, clones this repo into `~/.config/nvim`, syncs plugins with `lazy.nvim`, and installs Mason-managed language servers, formatters, and debug tooling.
 
 ### Native Windows
 
@@ -72,6 +72,7 @@ On NixOS, `:Mason` should be unavailable. On non-Nix systems, `:Mason` should op
 
 ## Notes
 
+- Python debugging uses `debugpy`.
 - Rust/C/C++ debugging uses `NVIM_DAP_LLDB_PATH` and `NVIM_DAP_LLDB_LIB_PATH` when available.
 - Shell-script debugging uses `bashdb` when it is present in `PATH`.
 - Search features expect `ripgrep`, `fd`, and `fzf`.

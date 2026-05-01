@@ -6,6 +6,10 @@ local function executable(name)
   return path
 end
 
+local function python_command()
+  return executable 'python3' or executable 'python'
+end
+
 local function split_args(prompt)
   local input = vim.fn.input(prompt)
   if input == '' then return {} end
@@ -27,16 +31,24 @@ end
 
 local function configure_python(dap)
   local debugpy_adapter = executable 'debugpy-adapter'
-  if not debugpy_adapter then
-    vim.notify_once('debugpy-adapter is not available in PATH.', vim.log.levels.WARN)
+  local adapter = debugpy_adapter and {
+    command = debugpy_adapter,
+  } or (python_command() and {
+    command = python_command(),
+    args = { '-m', 'debugpy.adapter' },
+  })
+
+  if not adapter then
+    vim.notify_once('debugpy-adapter or python3 is not available in PATH.', vim.log.levels.WARN)
     return
   end
 
-  local python = executable 'python3' or 'python3'
+  local python = python_command() or 'python3'
 
   dap.adapters.python = {
     type = 'executable',
-    command = debugpy_adapter,
+    command = adapter.command,
+    args = adapter.args,
   }
 
   dap.configurations.python = {
