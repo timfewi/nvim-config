@@ -9,6 +9,31 @@ M.definitions = {
 		colorscheme = "mintshot_dark_vs2019",
 		background = "dark",
 	},
+	neon_slate_dark = {
+		module = "themes.neon_slate_dark",
+		colorscheme = "neon_slate_dark",
+		background = "dark",
+	},
+	ember_ink_dark = {
+		module = "themes.ember_ink_dark",
+		colorscheme = "ember_ink_dark",
+		background = "dark",
+	},
+	rusty_golem_light = {
+		module = "themes.rusty_golem_light",
+		colorscheme = "rusty_golem_light",
+		background = "light",
+	},
+	citrus_punch_light = {
+		module = "themes.citrus_punch_light",
+		colorscheme = "citrus_punch_light",
+		background = "light",
+	},
+	seaglass_pop_light = {
+		module = "themes.seaglass_pop_light",
+		colorscheme = "seaglass_pop_light",
+		background = "light",
+	},
 	tokyonight = {
 		plugin = "folke/tokyonight.nvim",
 		module = "tokyonight",
