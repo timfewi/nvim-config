@@ -6,6 +6,7 @@ return {
 	{ import = "plugins.git" },
 	{ import = "plugins.search" },
 	{ import = "plugins.lsp" },
+	{ import = "plugins.test" },
 	{ import = "plugins.ui" },
 	{ import = "plugins.treesitter" },
 }
