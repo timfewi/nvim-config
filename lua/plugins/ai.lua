@@ -89,7 +89,6 @@ return {
         },
         providers = {
           openrouter = {
-            __inherited_from = 'openai',
             endpoint = 'https://openrouter.ai/api/v1',
             model = 'qwen/qwen3.6-flash',
             api_key_name = 'OPENROUTER_API_KEY',
