@@ -5,18 +5,6 @@ local function has_lsp_config(name) return #vim.api.nvim_get_runtime_file('lsp/'
 local function angular_root(fname) return util.root_pattern('angular.json', 'nx.json')(fname) end
 local function mason_enabled() return vim.fn.filereadable '/etc/NIXOS' == 0 end
 
-local function powershell_bundle_path()
-  local executable = vim.fn.exepath 'powershell-editor-services'
-  if executable == '' then return nil end
-
-  local bundle_path = vim.fs.normalize((executable:gsub('/bin/powershell%-editor%-services$', '/lib/powershell-editor-services')))
-  if bundle_path == executable or not vim.uv.fs_stat(bundle_path .. '/PowerShellEditorServices/Start-EditorServices.ps1') then
-    return nil
-  end
-
-  return bundle_path
-end
-
 local function typescript_root(fname)
   if angular_root(fname) then return nil end
 
@@ -83,17 +71,25 @@ function M.setup()
       end
 
       if client and client:supports_method('textDocument/inlayHint', event.buf) then
-        map('<leader>th', function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf }) end, '[T]oggle Inlay [H]ints')
+        vim.lsp.inlay_hint.enable(true, { bufnr = event.buf })
+        map('<leader>th', function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf }, { bufnr = event.buf }) end, '[T]oggle Inlay [H]ints')
+      end
+
+      if client and client:supports_method('textDocument/codeLens', event.buf) then
+        map('<leader>cl', vim.lsp.codelens.run, '[C]ode [L]ens')
+        vim.api.nvim_create_autocmd({ 'BufEnter', 'CursorHold', 'InsertLeave' }, {
+          buffer = event.buf,
+          callback = function() vim.lsp.codelens.refresh({ bufnr = event.buf }) end,
+        })
       end
     end,
   })
 
   local ts_server = has_lsp_config 'ts_ls' and 'ts_ls' or 'tsserver'
-  local powershell_bundle = powershell_bundle_path()
   local required_binaries = {
     bashls = { 'bash-language-server' },
     nil_ls = { 'nil' },
-    pyright = { 'pyright-langserver', 'pyright' },
+    basedpyright = { 'basedpyright-langserver', 'basedpyright' },
     rust_analyzer = { 'rust-analyzer' },
     sqls = { 'sqls' },
     [ts_server] = { 'typescript-language-server' },
@@ -142,7 +138,19 @@ function M.setup()
       },
     },
     marksman = {},
-    nil_ls = {},
+    nil_ls = {
+      settings = {
+        ['nil'] = {
+          formatting = { command = { 'nixfmt' } },
+          nix = {
+            inlayHints = {
+              variableBindings = true,
+              bindPatterns = true,
+            },
+          },
+        },
+      },
+    },
     omnisharp = {
       settings = {
         FormattingOptions = {
@@ -168,20 +176,24 @@ function M.setup()
         },
       },
     },
-    powershell_es = powershell_bundle and {
-      bundle_path = powershell_bundle,
-    } or nil,
-    pyright = {
+    basedpyright = {
       settings = {
-        pyright = {
+        basedpyright = {
           disableOrganizeImports = false,
         },
         python = {
           analysis = {
             autoSearchPaths = true,
             diagnosticMode = 'workspace',
-            typeCheckingMode = 'basic',
+            typeCheckingMode = 'standard',
             useLibraryCodeForTypes = true,
+            inlayHints = {
+              callArgumentNames = 'all',
+              functionReturnTypes = true,
+              variableTypes = true,
+              genericTypes = true,
+              pytestParameters = true,
+            },
           },
         },
       },

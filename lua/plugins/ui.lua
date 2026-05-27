@@ -27,4 +27,20 @@ table.insert(specs, {
   end,
 })
 
+table.insert(specs, {
+  'stevearc/dressing.nvim',
+  event = 'VeryLazy',
+  opts = {
+    input = {
+      enabled = true,
+      default_prompt = 'Input:',
+      trim_input = true,
+    },
+    select = {
+      enabled = true,
+      backend = { 'telescope', 'builtin' },
+    },
+  },
+})
+
 return specs

@@ -1,60 +1,21 @@
-local function read_secret_file(path)
-  local secret_file = io.open(path, 'r')
-  if secret_file == nil then return nil, ('Avante: unable to open OPENROUTER_API_KEY_FILE at %s'):format(path) end
-
-  local secret = secret_file:read '*a'
-  secret_file:close()
-
-  if secret == nil then return nil, 'Avante: failed to read OPENROUTER_API_KEY_FILE' end
-
-  secret = secret:gsub('%s+$', '')
-  if secret == '' then return nil, 'Avante: OPENROUTER_API_KEY_FILE is empty' end
-
-  return secret
-end
-
-local function ensure_openrouter_api_key()
-  if vim.env.OPENROUTER_API_KEY ~= nil and vim.env.OPENROUTER_API_KEY ~= '' then return true end
-
-  local key_file = vim.env.OPENROUTER_API_KEY_FILE
-  if not key_file or key_file == '' then
-    vim.notify_once('Avante: OPENROUTER_API_KEY_FILE is not set', vim.log.levels.WARN)
-    return false
+local function openrouter_api_key_name()
+  if vim.env.OPENROUTER_API_KEY_FILE ~= nil and vim.env.OPENROUTER_API_KEY_FILE ~= '' then
+    return 'cmd:test -n "$OPENROUTER_API_KEY_FILE" && tr -d "\\r\\n" < "$OPENROUTER_API_KEY_FILE"'
   end
 
-  local api_key, err = read_secret_file(key_file)
-  if not api_key then
-    vim.notify_once(err or ('Avante: failed to read ' .. key_file),vim.log.levels.WARN)
-    return false
+  if vim.env.OPENROUTER_API_KEY ~= nil and vim.env.OPENROUTER_API_KEY ~= '' then
+    return 'OPENROUTER_API_KEY'
   end
 
-  vim.env.OPENROUTER_API_KEY = api_key
-  return true
+  -- No key configured (neither OPENROUTER_API_KEY_FILE from Nix nor
+  -- OPENROUTER_API_KEY as fallback). Return empty so Avante skips the
+  -- key-prompt dialog silently; run `nixos-rebuild switch` to set the
+  -- agenix-backed OPENROUTER_API_KEY_FILE env var, or set OPENROUTER_API_KEY
+  -- directly.
+  return ''
 end
 
 return {
-  {
-    'zbirenbaum/copilot.lua',
-    cmd = 'Copilot',
-    event = 'InsertEnter',
-    opts = {
-      panel = {
-        enabled = false,
-      },
-      suggestion = {
-        enabled = true,
-        auto_trigger = true,
-        hide_during_completion = false,
-        keymap = {
-          accept = '<M-l>',
-          accept_word = '<M-w>',
-          next = '<M-]>',
-          prev = '<M-[>',
-          dismiss = '<C-]>',
-        },
-      },
-    },
-  },
   {
     'yetone/avante.nvim',
     event = 'VeryLazy',
@@ -74,7 +35,23 @@ return {
       },
     },
     config = function(_, _)
-      ensure_openrouter_api_key()
+      -- Monkey-patch Avante's native input provider: upstream bug uses
+      -- vim.ui.select() instead of vim.ui.input(), causing telescope-ui-select
+      -- to crash (receives a function as opts). When dressing.nvim is installed
+      -- this also ensures concealed/password input works properly.
+      local ok, native = pcall(require, 'avante.ui.input.providers.native')
+      if ok and native then
+        native.show = function(self)
+          local input = self
+          -- upstream line 20: vim.ui.select(opts, input.on_submit)
+          --   should be:     vim.ui.input(opts, input.on_submit)
+          vim.ui.input({
+            prompt = input.prompt,
+            default = input.default,
+            completion = input.completion,
+          }, input.on_submit)
+        end
+      end
 
       require('avante').setup {
         provider = 'openrouter',
@@ -92,7 +69,7 @@ return {
             __inherited_from = 'openai',
             endpoint = 'https://openrouter.ai/api/v1',
             model = 'qwen/qwen3.6-flash',
-            api_key_name = 'OPENROUTER_API_KEY',
+            api_key_name = openrouter_api_key_name(),
             timeout = 30000,
             extra_request_body = {
               temperature = 0,
