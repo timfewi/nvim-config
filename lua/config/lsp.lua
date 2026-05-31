@@ -3,7 +3,6 @@ local util = require 'lspconfig.util'
 
 local function has_lsp_config(name) return #vim.api.nvim_get_runtime_file('lsp/' .. name .. '.lua', false) > 0 end
 local function angular_root(fname) return util.root_pattern('angular.json', 'nx.json')(fname) end
-local function mason_enabled() return vim.fn.filereadable '/etc/NIXOS' == 0 end
 
 local function typescript_root(fname)
   if angular_root(fname) then return nil end
@@ -20,9 +19,7 @@ local function has_any_executable(candidates)
 end
 
 local function notify_missing_server(name, candidates)
-  local install_hint = mason_enabled()
-      and 'Install it with Mason or put it on PATH.'
-    or 'Install it via nixos-config; Mason is disabled on NixOS.'
+  local install_hint = 'Install it via nixos-config; Mason is disabled on NixOS.'
 
   vim.schedule(function()
     vim.notify_once(

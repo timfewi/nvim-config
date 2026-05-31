@@ -1,5 +1,4 @@
 return {
-	{ import = "plugins.ai" },
 	{ import = "plugins.core" },
 	{ import = "plugins.debug" },
 	{ import = "plugins.explorer" },
