@@ -2,7 +2,7 @@
 
 Neovim configuration for NixOS Linux, managed alongside `timfewi/nixos-config`.
 
-`~/.config/nvim` is the writable source of truth. Nix installs Neovim and editor tooling, `lazy.nvim` installs plugins, and Mason is disabled on NixOS — all LSPs, formatters, and debuggers come from the Nix store.
+`~/.config/nvim` is the writable source of truth. Nix installs Neovim and editor tooling, `lazy.nvim` installs plugins — all LSPs, formatters, and debuggers come from the Nix store.
 
 ## Repository layout
 
@@ -30,11 +30,11 @@ Update Neovim binaries, LSPs, formatters, and debuggers by editing `modules/home
 
 ## Tooling model
 
-- **NixOS:** binaries and tooling come from Nix; Mason is disabled.
+- **NixOS:** binaries and tooling come from Nix.
 - **Plugins:** `lazy.nvim`
 - **Lockfile:** `lazy-lock.json` stays writable because this repo lives outside the Nix store.
 
-If a configured LSP reports a missing executable on NixOS, add that server in `nixos-config`; this repo intentionally does not fall back to Mason there.
+If a configured LSP reports a missing executable on NixOS, add that server in `nixos-config`.
 
 The TypeScript LSP also covers React buffers (`javascriptreact` / `typescriptreact`), so React support comes from the same TypeScript server installation.
 

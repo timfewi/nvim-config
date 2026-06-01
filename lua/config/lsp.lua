@@ -19,7 +19,7 @@ local function has_any_executable(candidates)
 end
 
 local function notify_missing_server(name, candidates)
-  local install_hint = 'Install it via nixos-config; Mason is disabled on NixOS.'
+  local install_hint = 'Install it via nixos-config.'
 
   vim.schedule(function()
     vim.notify_once(
@@ -86,7 +86,6 @@ function M.setup()
   local required_binaries = {
     bashls = { 'bash-language-server' },
     nil_ls = { 'nil' },
-    basedpyright = { 'basedpyright-langserver', 'basedpyright' },
     rust_analyzer = { 'rust-analyzer' },
     sqls = { 'sqls' },
     [ts_server] = { 'typescript-language-server' },
@@ -173,28 +172,6 @@ function M.setup()
         },
         Sdk = {
           IncludePrereleases = true,
-        },
-      },
-    },
-    basedpyright = {
-      settings = {
-        basedpyright = {
-          disableOrganizeImports = false,
-        },
-        python = {
-          analysis = {
-            autoSearchPaths = true,
-            diagnosticMode = 'workspace',
-            typeCheckingMode = 'standard',
-            useLibraryCodeForTypes = true,
-            inlayHints = {
-              callArgumentNames = 'all',
-              functionReturnTypes = true,
-              variableTypes = true,
-              genericTypes = true,
-              pytestParameters = true,
-            },
-          },
         },
       },
     },

@@ -1,6 +1,14 @@
 return {
   { 'NMAC427/guess-indent.nvim', opts = {} },
   {
+    'numToStr/Comment.nvim',
+    opts = {},
+    keys = {
+      { 'gc', mode = { 'n', 'v' }, desc = 'Comment toggle linewise' },
+      { 'gb', mode = { 'n', 'v' }, desc = 'Comment toggle blockwise' },
+    },
+  },
+  {
     'lewis6991/gitsigns.nvim',
     opts = function()
       return {
