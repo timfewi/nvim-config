@@ -140,6 +140,9 @@ function M.setup()
         ['nil'] = {
           formatting = { command = { 'nixfmt' } },
           nix = {
+            flake = {
+              autoArchive = false,
+            },
             inlayHints = {
               variableBindings = true,
               bindPatterns = true,
