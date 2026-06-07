@@ -85,7 +85,9 @@ function M.setup()
   local ts_server = has_lsp_config 'ts_ls' and 'ts_ls' or 'tsserver'
   local required_binaries = {
     bashls = { 'bash-language-server' },
+    basedpyright = { 'basedpyright' },
     nil_ls = { 'nil' },
+    ruff = { 'ruff' },
     rust_analyzer = { 'rust-analyzer' },
     sqls = { 'sqls' },
     [ts_server] = { 'typescript-language-server' },
@@ -94,6 +96,18 @@ function M.setup()
 
   local servers = {
     bashls = {},
+    basedpyright = {
+      settings = {
+        basedpyright = {
+          analysis = {
+            autoSearchPaths = true,
+            diagnosticMode = 'openFilesOnly',
+            typeCheckingMode = 'standard',
+          },
+        },
+      },
+    },
+    ruff = {},
     cssls = {},
     docker_compose_language_service = {},
     dockerls = {},
