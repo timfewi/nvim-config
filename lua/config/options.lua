@@ -38,6 +38,13 @@ vim.diagnostic.config {
     source = 'if_many',
     spacing = 2,
   },
-  virtual_lines = false,
+  virtual_lines = { current_line = true },
   jump = { float = true },
 }
+
+vim.api.nvim_create_autocmd('ColorScheme', {
+  group = vim.api.nvim_create_augroup('nvim-lsp-highlights', { clear = true }),
+  callback = function()
+    vim.api.nvim_set_hl(0, 'LspInlayHint', { italic = true, fg = '#6c6c6c' })
+  end,
+})

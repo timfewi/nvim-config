@@ -16,3 +16,17 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+
+vim.keymap.set('n', '<leader>td', function()
+  local current = vim.diagnostic.config()
+  if current.virtual_text then
+    vim.diagnostic.config { virtual_text = false, virtual_lines = { current_line = true } }
+  else
+    vim.diagnostic.config { virtual_text = { prefix = '●', source = 'if_many', spacing = 2 }, virtual_lines = false }
+  end
+end, { desc = '[T]oggle [D]iagnostic display' })
+
+vim.keymap.set('n', '<leader>xx', '<cmd>Trouble<CR>', { desc = 'Trouble: Toggle' })
+vim.keymap.set('n', '<leader>xw', '<cmd>Trouble diagnostics filter.buf=0<CR>', { desc = 'Trouble: Workspace diagnostics' })
+vim.keymap.set('n', '<leader>xd', '<cmd>Trouble diagnostics<CR>', { desc = 'Trouble: Document diagnostics' })
+vim.keymap.set('n', '<leader>xl', '<cmd>Trouble loclist<CR>', { desc = 'Trouble: Location list' })

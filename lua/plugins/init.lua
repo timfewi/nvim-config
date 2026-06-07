@@ -7,5 +7,6 @@ return {
 	{ import = "plugins.lsp" },
 	{ import = "plugins.test" },
 	{ import = "plugins.ui" },
+	{ import = "plugins.ide" },
 	{ import = "plugins.treesitter" },
 }

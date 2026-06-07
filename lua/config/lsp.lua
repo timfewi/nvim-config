@@ -40,7 +40,14 @@ function M.setup()
       end
 
       map('grn', vim.lsp.buf.rename, '[R]e[n]ame')
-      map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
+      map('gra', function()
+        local ok, action = pcall(require, 'tiny-code-action')
+        if ok then
+          action.code_action()
+        else
+          vim.lsp.buf.code_action()
+        end
+      end, '[G]oto Code [A]ction', { 'n', 'x' })
       map('grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
       local client = vim.lsp.get_client_by_id(event.data.client_id)
@@ -79,6 +86,24 @@ function M.setup()
           callback = function() vim.lsp.codelens.refresh({ bufnr = event.buf }) end,
         })
       end
+
+      map('K', function()
+        local winid = vim.lsp.buf.hover()
+        if winid then
+          vim.api.nvim_create_autocmd('CursorMoved', {
+            buffer = event.buf,
+            once = true,
+            callback = function()
+              pcall(vim.api.nvim_win_close, winid, true)
+            end,
+          })
+        end
+      end, 'Hover documentation')
+
+      map('grI', function() vim.lsp.buf.incoming_calls() end, '[G]oto [I]ncoming calls')
+      map('grO', function() vim.lsp.buf.outgoing_calls() end, '[G]oto [O]utgoing calls')
+
+      map('<C-s>', vim.lsp.buf.signature_help, 'Signature help', 'i')
     end,
   })
 
