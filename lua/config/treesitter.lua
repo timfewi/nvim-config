@@ -24,6 +24,7 @@ function M.setup()
     'vimdoc',
     'xml',
     'yaml',
+    'zsh',
   }
 
   require('nvim-treesitter').install(parsers)

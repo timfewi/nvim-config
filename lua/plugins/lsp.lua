@@ -43,6 +43,7 @@ return {
         rust = { 'rustfmt' },
         scss = { 'prettier' },
         sh = { 'shfmt' },
+        zsh = { 'shfmt' },
         toml = { 'taplo' },
         typescript = { 'biome' },
         typescriptreact = { 'biome' },

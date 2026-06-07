@@ -95,7 +95,9 @@ function M.setup()
   }
 
   local servers = {
-    bashls = {},
+    bashls = {
+      filetypes = { 'sh', 'zsh' },
+    },
     basedpyright = {
       settings = {
         basedpyright = {
