@@ -81,10 +81,7 @@ function M.setup()
 
       if client and client:supports_method('textDocument/codeLens', event.buf) then
         map('<leader>cl', vim.lsp.codelens.run, '[C]ode [L]ens')
-        vim.api.nvim_create_autocmd({ 'BufEnter', 'CursorHold', 'InsertLeave' }, {
-          buffer = event.buf,
-          callback = function() vim.lsp.codelens.refresh({ bufnr = event.buf }) end,
-        })
+        vim.lsp.codelens.enable(true, { bufnr = event.buf })
       end
 
       map('K', function()

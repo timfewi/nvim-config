@@ -8,6 +8,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup(require 'plugins.init', {
+  rocks = { hererocks = false },
   ui = {
     icons = vim.g.have_nerd_font and {} or {
       cmd = '⌘',

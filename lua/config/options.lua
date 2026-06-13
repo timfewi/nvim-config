@@ -39,7 +39,11 @@ vim.diagnostic.config {
     spacing = 2,
   },
   virtual_lines = { current_line = true },
-  jump = { float = true },
+  jump = {
+    on_jump = function(_, bufnr)
+      vim.diagnostic.open_float { bufnr = bufnr, scope = 'cursor', focus = false }
+    end,
+  },
 }
 
 vim.api.nvim_create_autocmd('ColorScheme', {
