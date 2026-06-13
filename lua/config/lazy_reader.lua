@@ -7,6 +7,7 @@ local commands = {
   Narrate = { mode = 'narrate', desc = 'Narrate selection' },
   Solve = { mode = 'solve', desc = 'Solve selection' },
   Teach = { mode = 'teach', desc = 'Teach selection' },
+  Master = { mode = 'master', desc = 'Expert summarization from clipboard' },
 }
 
 local function notify(message, level) vim.notify(message, level or vim.log.levels.INFO, { title = 'Lazy Reader' }) end
@@ -103,6 +104,7 @@ function M.setup()
   map('x', '<leader>rn', function() M.run 'narrate' end, { desc = 'Narrate selection' })
   map('x', '<leader>rp', function() M.run 'solve' end, { desc = 'Solve selection' })
   map('x', '<leader>rt', function() M.run 'teach' end, { desc = 'Teach selection' })
+  map('x', '<leader>rm', function() M.run 'master' end, { desc = 'Master summary' })
 end
 
 return M
